@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <title>Tweety</title>
+</head>
+<body>
+    <h1>Tweety</h1>
+    <p>Your mini tweety</p>
+    <div>
+        <textarea name="tweet" id="tweet" cols="30" rows="5"></textarea>
+        <br>
+        <button type="submit" id="tweety">New Tweety</button>
+    </div>
+    <div>
+        <input type="search" name="search" id="search">
+        <button id="searching">Search</button>
+    </div>
+    <div>
+        <button type="submit" id="timeline" >Timeline</button>
+    </div>
+    <div>
+        <ul id="content">
+
+        </ul>
+    </div>
+    <div>
+        <ul id="hasil">
+
+        </ul>
+    </div>
+</body>
+<script>
+    $(document).ready(function(){
+        $('#timeline').click(function(){
+            axios.get('http://localhost:3000/tweety')
+                .then(function (response) {
+                    // console.log(response.data[0].trends);
+                    response.data[0].trends.forEach(rows => {
+                        // console.log(rows);
+                        $('#content').append(`<li>${rows.name} : <a href='${rows.url}'>${rows.url}</a></li>`)
+                    })
+                    // console.log(response.data.length);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        })
+
+    })
+
+    $(document).ready(function(){
+        $('#tweety').click(function() {
+           console.log($('#tweet').val());
+            axios.post('http://localhost:3000/tweety/newtweet', {
+                "status": $('#tweet').val()
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        })
+    })
+
+    $(document).ready(function(){
+        $('#searching').click(function(){
+            // console.log($('#search').val());
+            axios.get(`http://localhost:3000/tweety/search/${$('#search').val()}`)
+                .then(function (response) {
+                    // console.log(response.data.statuses[0]);
+                    $('#hasil').append(`<u>Hasil pencarian dari <b><i>${$('#search').val()}:</i></b><u>`)
+                    response.data.statuses.forEach(rows=>{
+                        // console.log(rows);
+                        $('#hasil').append(`<li>${rows.text} link <a href='${rows.source}'>here</a></li>`)
+                    })
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        })
+    })
+
+</script>
+</html>
